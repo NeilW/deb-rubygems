@@ -1,0 +1,60 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 09_installer.dpatch by Daigo Moriwaki <daigo@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+diff -urNad trunk~/lib/rubygems/installer.rb trunk/lib/rubygems/installer.rb
+--- trunk~/lib/rubygems/installer.rb	2007-05-11 04:01:45.000000000 +0900
++++ trunk/lib/rubygems/installer.rb	2007-05-27 08:51:33.000000000 +0900
+@@ -84,6 +84,14 @@
+         end
+       end
+ 
++      if @options[:build_root]
++        build_root = @options[:build_root]
++        FileUtils.mkdir_p build_root
++        raise Gem::FilePermissionError.new(build_root) unless File.writable?(build_root)
++        install_dir = build_root + install_dir
++        FileUtils.mkdir_p install_dir
++      end
++
+       raise Gem::FilePermissionError.new(Pathname.new(install_dir).expand_path) unless File.writable?(install_dir)
+ 
+       # Build spec dir.
+@@ -393,6 +401,7 @@
+     #
+     def initialize(gem, options)
+       @gem = gem
++      @options = options
+       @version = options[:version] || "> 0"
+       @force_executables = options[:executables]
+       @force_all = options[:all]
+@@ -447,8 +456,13 @@
+     def remove_executables(gemspec)
+       return if gemspec.nil?
+       if(gemspec.executables.size > 0)
+-        raise Gem::FilePermissionError.new(Gem.bindir) unless
+-          File.writable?(Gem.bindir)
++        bindir = Gem.bindir
++        if @options[:build_root]
++          install_dir = File.join(@options[:build_root], Gem.dir)
++          bindir = Gem.bindir(install_dir)
++        end
++        raise Gem::FilePermissionError.new(bindir) unless
++          File.writable?(bindir)
+         list = Gem.source_index.search(gemspec.name).delete_if { |spec|
+           spec.version == gemspec.version
+         }
+@@ -469,8 +483,8 @@
+         else
+           gemspec.executables.each do |exe_name|
+             say "Removing #{exe_name}"
+-            File.unlink File.join(Gem.bindir, exe_name) rescue nil
+-            File.unlink File.join(Gem.bindir, exe_name + ".cmd") rescue nil
++            File.unlink File.join(bindir, exe_name) rescue nil
++            File.unlink File.join(bindir, exe_name + ".cmd") rescue nil
+           end
+         end
+       end

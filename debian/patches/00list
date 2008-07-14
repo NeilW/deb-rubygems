@@ -1,0 +1,6 @@
+01_default_gem_path.dpatch
+03_disable_update_system.dpatch
+08_tighter_search_regex.dpatch
+21_avoid_ioseek.dpatch
+#05_gem_commands.dpatch
+#09_installer.dpatch 
