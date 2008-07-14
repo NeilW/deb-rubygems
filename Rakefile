@@ -282,7 +282,13 @@ PKG_FILES = FileList[
   "setup.rb",
   "test/**/*"
 ]
-PKG_FILES.exclude(%r(^test/temp(/|$)))
+
+PKG_FILES.exclude %r(^test/temp(/|$))
+PKG_FILES.exclude %r(\*\.rbc$)
+
+task :package_files do
+  puts PKG_FILES.join("\n")
+end
 
 Rake::PackageTask.new("package") do |p|
   p.name = PKG_NAME
@@ -307,7 +313,7 @@ installation of RubyGems before this update can be applied.
   s.email = "rubygems-developers@rubyforge.org"
   s.homepage = "http://rubygems.rubyforge.org"
   s.rubyforge_project = "rubygems"
-  s.bindir = "bin"                               # Use these for applications.
+  s.bindir = "bin" # Use these for applications.
   s.executables = ["update_rubygems"]
   certdir = ENV['CERT_DIR']
   if certdir
@@ -336,7 +342,8 @@ task :install do
   svnversion = `svnversion`.split(':').last.sub(/[^\d]/, '').strip
 
   unless svnversion.empty? then
-    current_version = Gem::RubyGemsVersion.split '.', 4
+    File.read('lib/rubygems/rubygems_version.rb') =~ /RubyGemsVersion = '(.*)'/
+    current_version = $1.split '.', 4
     rubygems_version = (current_version[0, 3] << svnversion).join '.'
     rubygems_version_file = File.join Gem::ConfigMap[:sitelibdir], 'rubygems',
                                       'rubygems_version.rb'
@@ -395,7 +402,7 @@ task :rf => :rubyfiles
 # RUBINIUS_PATH.
 
 diff_options = "-urpN --exclude '*svn*' --exclude '*swp' --exclude '*rbc'"
-rsync_options = "-avP --exclude '*svn*' --exclude '*swp' --exclude '*rbc' --exclude '*.rej' --exclude '*.orig'"
+rsync_options = "-avP --exclude '*svn*' --exclude '*swp' --exclude '*rbc' --exclude '*.rej' --exclude '*.orig' --exclude 'lib/rubygems/defaults/*'"
 
 rubinius_dir = ENV['RUBINIUS_PATH'] || '../../../git/git.rubini.us/code'
 ruby_dir = ENV['RUBY_PATH'] || '../../ruby/trunk'
@@ -423,7 +430,7 @@ end
 
 desc "Updates Rubinius HEAD with the currently checked-out copy of RubyGems."
 task :update_rubinius do
-  sh "rsync #{rsync_options} bin/gem #{rubinius_dir}/lib/bin/gem.rb"
+  sh "rsync #{rsync_options} bin/gem #{rubinius_dir}/lib/bin/gem"
   sh "rsync #{rsync_options} lib/ #{rubinius_dir}/lib"
   sh "rsync #{rsync_options} test/ #{rubinius_dir}/test/rubygems"
   sh "rsync #{rsync_options} util/gem_prelude.rb #{rubinius_dir}/kernel/core/gem_prelude.rb"
@@ -431,11 +438,10 @@ end
 
 desc "Diffs Rubinius HEAD with the currently checked-out copy of RubyGems."
 task :diff_rubinius do
-  sh "diff #{diff_options} bin/gem #{rubinius_dir}/lib/bin/gem.rb; true"
+  sh "diff #{diff_options} bin/gem #{rubinius_dir}/lib/bin/gem; true"
   sh "diff #{diff_options} lib/ubygems.rb #{rubinius_dir}/lib/ubygems.rb; true"
   sh "diff #{diff_options} lib/rubygems.rb #{rubinius_dir}/lib/rubygems.rb; true"
   sh "diff #{diff_options} lib/rubygems #{rubinius_dir}/lib/rubygems; true"
-  sh "diff #{diff_options} lib/rbconfig #{rubinius_dir}/lib/rbconfig; true"
   sh "diff #{diff_options} test #{rubinius_dir}/test/rubygems; true"
   sh "diff #{diff_options} util/gem_prelude.rb #{rubinius_dir}/kernel/core/gem_prelude.rb; true"
 end
