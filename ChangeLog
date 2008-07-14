@@ -1,3 +1,269 @@
+2008-06-21  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/specification.rb:  Load specifications from the future.
+	Roll back specification version change.
+	* lib/rubygems/remote_fetcher.rb:  Reset connection when an HTTP
+	server misbehaves.
+	* setup.rb:  Fix --destdir for windows.
+	* doc/release_notes/rel_1_2_0.rdoc:  Bugs in RubyGems were
+	unintentionally added, order bug fixes by importance.
+	* lib/rubygems/rubygems_version.rb:  1.2.0.
+
+2008-06-20  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/uninstaller.rb:  Improve output when a gem to uninstall
+	isn't found.  Bug #20746 reported by Chad Wooley.
+	* setup.rb:  Fix rdoc installation with --destdir.  Patch #20739 by
+	Matthew Kent.
+	* lib/rubygems/commands/install_command.rb:  Don't reset GEM_PATH when
+	installing.  Fixes Bug #20746 by Chad Wooley.
+
+2008-06-20  Luis Lavena  <luislavena@gmail.com>
+
+	* setup.rb: Only prepend install_destdir when especified. Fixes
+	installation issues related to Windows paths (/C:/...)
+
+2008-06-19  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/dependency_installer.rb:  Ensure that the entire
+	dependency chain is installed.  Fixes bug reported by Chad Woolley.
+
+2008-06-18  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/commands/dependency_command.rb:  Restore matching
+	everything when no name is specified, regexp matching.  Fixes bug
+	#20716, bug #20717 by Chad Woolley.
+
+2008-06-18  Chad Woolley  <thewoolleyman@gmail.com>
+
+	* lib/rubygems/config_file.rb:  Fix --config-file option with no
+	equals and subsequent options to properly assign config file.
+	Previously config file was overwritten by subsequent option.
+	Fixes bug #16688.
+
+2008-06-17  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/version.rb:  Gem::Version #hash and #eql? now operate
+	on the version string, terms of the version string, so "1" and "1.0"
+	no longer correspond to the same slot.  Fixes indexer bug reported by
+	Chad Woolley.
+	* setup.rb:  Fix --format-executable.  Patch #20698 by Richard Brown.
+	* util/gem_prelude.rb:  Prevent infinite recursion, check for Gem now.
+	Patch from ruby trunk by nobu.
+	* lib/*:  Spelling cleanup.  Patch from trunk by Evan Farrar.
+	* test/*:  Fixes for win32 test failures reported by Luis Lavena.
+	* util/gem_prelude.rb:  Only remove methods added by gem_prelude.rb.
+
+2008-06-16  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/indexer.rb:  Fix quick_index generation.
+	* lib/rubygems/specification.rb:  Correctly guard new spec features
+	for older RubyGems.
+	* lib/rubygems/config_file.rb:  Add system-wide config file
+	(/etc/gemrc).  Patch #14723 by Phil Hagelberg.  Add windows code to
+	use appropriate directory.  Code by Daniel Berger.
+	* doc/release_notes/rel_1_2_0.rdoc:  Draft of 1.2.0 release notes.
+
+2008-06-15  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/server.rb:  Store off if we are returning Marshal
+	format before running =~ again.  Fixes bug reported by Chad Woolley.
+	* lib/rubygems/commands/stale_command.rb:  `gem stale` lists gems by
+	last access time.  Patch #20593 by Aaron Patterson.
+	* lib/rubygems/setup.rb:  Add --vendor and --destdir to setup.rb for
+	packagers.  Patch #20610 by Richard Brown.  Don't look for stub
+	files to remove any more.
+	* lib/rubygems/specification.rb:  Bump specification version and be
+	backwards compatible with type 2 specs.
+	* lib/rubygems/commands/query_command.rb:  Add installed location to
+	details for installed gems.
+
+2008-06-09  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/dependency_installer.rb:  Only install all dependencies
+	when install_dir option is set.  Don't include satisfied dependencies
+	when gathering dependencies.
+	* lib/rubygems/commands/query_command.rb:  Display authors, rubyforge
+	and homepage urls with details.
+	* lib/rubygems/commands/environment_command.rb:  Add executable
+	directory (from Rubinius).
+	* lib/rubygems/commands/install_command.rb:  Don't set install_dir by
+	default.
+	* lib/rubygems/commands/update_command.rb:  Don't set install_dir by
+	default.  Use #find_missing for efficiency.
+
+2008-06-07  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/server.rb:  Fully mirror Gem::Indexer indexes, set
+	correct content-type headers, always refresh the source index.
+	* lib/rubygems/source_index.rb:  Add spec_dirs so that #refresh! will
+	always reload from the same locations.  #refresh! on manually-built
+	SourceIndex now raises.  Fixes #20509 by Chad Woolley.
+
+2008-06-06  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/installer.rb:  Remove previous bin_script_path in case
+	it is a symlink.
+	* lib/rubygems/commands/pristine_command.rb:  Force reinstallation of
+	the gem using the installer.  Fixes bug #20387 by Erik Persson.
+	* lib/rubygems/doc_manager.rb:  Ensure args to RDoc are all strings.
+	* lib/rubygems/source_index.rb:  Use find_matching to discover updated
+	specs instead of fetch.
+	* lib/rubygems/commands/query_command.rb:  Platform, not name in spec
+	tuples.
+
+2008-06-05  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/local_remote_options.rb:  Ensure remote repository URLs
+	reference directories.  Fixes bug #20134 by Neil Wilson.
+	* lib/rubygems/source_index.rb:  Gracefully handle ^C or explicit exit
+	while loading .gemspec files from disk.  Fixes bug #20523 by Joel
+	VanderWerf.
+	* lib/rubygems/specification.rb:  Use File#expand_path in
+	installation_path.  Fixes bug #19317 by Hemant Kumar.
+	* lib/rubygems/spec_fetcher.rb:  Fix legacy test against URI.
+	* lib/rubygems/remote_fetcher.rb:  Always raise FetchError from
+	RemoteFetcher.  Fix FetchErrors without URIs.  Refactor Net::HTTP
+	request code to use persistent connections for HEAD requests.  Feature
+	Request #7973 by Christian Schachtzabel.
+	* lib/rubygems.rb:  Don't load custom_require until after the OS and
+	implementation have had a chance to set paths.
+
+2008-06-04  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/commands/source_index.rb:  Only fetch specs we need in
+	#outdated.
+	* lib/rubygems.rb:  Fix typo in ::activate exception.
+	* lib/rubygems/dependency.rb:  For #to_s, display dependency type when
+	nil.
+	* lib/rubygems/dependency_installer.rb:  Reset #installed_gems for
+	every #install.  Fixes bug #19444 by Glenn Rempe.
+	* lib/rubygems/installer.rb:  Don't re-read the disk to check for new
+	gems, add them by hand on install.
+
+2008-06-03  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems.rb:  Add ::gzip, ::gunzip, ::deflate and ::inflate.
+	* lib/rubygems/server.rb:  Add specs and latest_specs indicies.
+	* setup.rb:  Don't require rdoc until needed.  Patch #20414 by Brian
+	Candler.
+	* lib/uninstaller.rb:  Correctly uninstall gems installed with a
+	legacy platform.  Patch #19877 by Luis Lavena.
+	* lib/rubygems/commands/update_command.rb:  Only fetch remote specs
+	when we know what we're looking for.
+
+2008-06-02  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/specification.rb:  Remove double slash in
+	#installation_path.  Fixes bug #19896 by Heiko Seebach.
+	* lib/rubygems/remote_fetcher.rb:  Require StringIO.  Fixes bug #19866
+	by Caleb Land.
+	* lib/rubygems.rb:  Require rubygems/defaults/#{RBX_ENGINE}.rb and
+	rubygem/defaults/operating_system.rb if they exist.  (OS require comes
+	first and may be overridden by operating system.)
+
+2008-06-01  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/indexer.rb:  Ensure identical names, versions and
+	platforms are identical for a smaller index.
+	* lib/rubygems/spec_fetcher.rb:  Only write to cache when we own it.
+	* lib/rubygems.rb:  Honor default_path if GEM_PATH environment
+	variable is not set.  Patch #19502 by Donavan Pantke.
+	* lib/rubygems/installer.rb:  Set file mode indicated by tar file.
+	Patch #19737 by Jason Roelofs.
+
+2008-06-01  John Barnette <jbarnette@rubyforge.org>
+
+	* lib/rubygems.rb: Add Gem.available?(gem, *specs) for easy availability
+	checks at runtime.
+
+2008-05-31  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/commands/dependency_command.rb:  Delay fetching specs
+	until needed.  Reverse dependencies can no longer be calculated for
+	remote sources.  Add backwards compatibility.
+	* lib/rubygems/commands/fetch_command.rb:  Add backwards
+	compatibility.
+
+2008-05-30  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/local_remote_options.rb:  --sources option should not
+	add URIs to Gem.sources.
+	* lib/rubygems/spec_fetcher.rb:  Add #warn_legacy to help handling
+	legacy sources.
+	* luby/rubygems/commands/query_command.rb:  Add backwards
+	compatibility with legacy sources.
+
+2008-05-28  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/remote_fetcher.rb:  Add #uri to
+	Gem::RemoteFetcher::FetchError.
+	* lib/rubygems/user_interaction.rb:  Improve RDoc slightly.
+	* lib/rubygems/spec_fetcher.rb:  Introduce backwards compatibility for
+	legacy (pre 1.2) repositories
+	* lib/rubygems/commands/sources_command.rb:  Backwards compatibility
+	and restoration of --update.
+	* lib/rubygems/specification.rb:  Ensure nil-typed dependencies become
+	runtime dependencies.
+
+2008-05-27  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/spec_fetcher.rb:  Switch #fetch, #find_matching to be
+	compatible with Gem::SourceInfoCache#search_with_source.  Add caching
+	for .gemspec files.
+	* lib/rubygems/dependency_installer.rb:  Switch to SpecFetcher.
+	* lib/rubygems/source_index.rb:  Switch #outdated to use SpecFetcher.
+	* lib/rubygems/commands/dependency_command.rb:  Switch to SpecFetcher.
+	* lib/rubygems/commands/outdated_command.rb:  Switch to SpecFetcher.
+	* lib/rubygems/commands/query_command.rb:  Switch to SpecFetcher.
+	* lib/rubygems/commands/sources_command.rb:  Switch to SpecFetcher.
+	* lib/rubygems/commands/update_command.rb:  Switch to SpecFetcher.
+	* lib/rubygems/version.rb:  Handle comparisons with non-Gem::Version
+	objects.
+
+2008-05-13  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/spec_fetcher.rb:  Add caching of specs, latest_specs
+	files.
+	* test/gemutilities.rb:  Ensure Gem.user_home doesn't point to ~.
+
+2008-05-09  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/indexer.rb:  Add Marshal format index of spec names,
+	versions and platforms.  WIP.
+	* lib/rubygems/spec_fetcher.rb:  WIP for replacement of
+	Gem::SourceInfoCache and SourceInfoCacheEntry.
+	* lib/rubygems/dependency.rb:  Add #=~.
+
+2008-05-07 John Barnette <jbarnette@gmail.com>
+
+	* lib/rubygems/specification.rb, et. al: Let gems have development
+	dependencies, which aren't installed (except when --development is
+	supplied) or activated.
+
+2008-05-02  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/indexer.rb:  Refactored into simpler more imperative
+	code.
+	* lib/rubygems.rb:  Leave rbconfig/datadir.rb for non-RubyGems use.
+
+2008-04-16  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/server.rb:  Refresh the source index per request so new
+	gems will be found after server startup.
+
+2008-04-15  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/source_index.rb:  Only print out "Bulk updating" when
+	verbose, fix #latest_specs documentation.
+	* lib/rubygems/dependency_installer.rb:  Add :cache_dir option for
+	Tinderbox.
+
+2008-04-14  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/test_utilities.rb:  Expose some internal testing
+	utilities that are of general use.
+
 2008-04-10  Eric Hodel  <drbrain@segment7.net>
 
 	* lib/rubygems.rb:  Fix Gem.prefix so it reports nil when rubygems.rb
@@ -3749,7 +4015,7 @@ Tue Dec  6 14:51:13 2005  Jim Weirich  <jim@tardis>
 2004-04-02 07:48  chadfowler
 
 	* lib/rubygems/remote_installer.rb: Prompt for installation of
-	  dependenciees.
+	  dependencies.
 
 	  For now, there is a puts/gets in the middle of
 	  remote_installer.rb  This should probably be cleaned up later

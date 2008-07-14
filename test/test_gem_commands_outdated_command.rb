@@ -2,7 +2,7 @@ require 'test/unit'
 require File.join(File.expand_path(File.dirname(__FILE__)), 'gemutilities')
 require 'rubygems/commands/outdated_command'
 
-class TestGemOutdatedCommand < RubyGemTestCase
+class TestGemCommandsOutdatedCommand < RubyGemTestCase
 
   def setup
     super
@@ -28,7 +28,10 @@ class TestGemOutdatedCommand < RubyGemTestCase
                                  remote_20.full_name + ".gemspec"
     FileUtils.rm remote_spec_file
 
-    util_setup_source_info_cache remote_10, remote_20
+    @fetcher = Gem::FakeFetcher.new
+    Gem::RemoteFetcher.fetcher = @fetcher
+
+    util_setup_spec_fetcher remote_10, remote_20
 
     use_ui @ui do @cmd.execute end
 
