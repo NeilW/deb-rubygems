@@ -18,6 +18,22 @@ class Gem::Uninstaller
   include Gem::UserInteraction
 
   ##
+  # The directory a gem's executables will be installed into
+
+  attr_reader :bin_dir
+
+  ##
+  # The gem repository the gem will be installed into
+
+  attr_reader :gem_home
+
+  ##
+  # The Gem::Specification for the gem being uninstalled, only set during
+  # #uninstall_gem
+
+  attr_reader :spec
+
+  ##
   # Constructs an Uninstaller instance
   #
   # gem:: [String] The Gem name to uninstall
@@ -42,28 +58,46 @@ class Gem::Uninstaller
 
     if list.empty? then
       raise Gem::InstallError, "Unknown gem #{@gem} #{@version}"
-    elsif list.size > 1 && @force_all
-      remove_all(list.dup)
-      remove_executables(list.last)
-    elsif list.size > 1
-      say
+
+    elsif list.size > 1 and @force_all then
+      remove_all list.dup
+
+    elsif list.size > 1 then
       gem_names = list.collect {|gem| gem.full_name} + ["All versions"]
-      gem_name, index =
-        choose_from_list("Select gem to uninstall:", gem_names)
-      if index == list.size
-        remove_all(list.dup)
-        remove_executables(list.last)
-      elsif index >= 0 && index < list.size
-        to_remove = list[index]
-        remove(to_remove, list)
-        remove_executables(to_remove)
+
+      say
+      gem_name, index = choose_from_list "Select gem to uninstall:", gem_names
+
+      if index == list.size then
+        remove_all list.dup
+      elsif index >= 0 && index < list.size then
+        uninstall_gem list[index], list.dup
       else
         say "Error: must enter a number [1-#{list.size+1}]"
       end
     else
-      remove(list[0], list.dup)
-      remove_executables(list.last)
+      uninstall_gem list.first, list.dup
     end
+  end
+
+  ##
+  # Uninstalls gem +spec+
+
+  def uninstall_gem(spec, specs)
+    @spec = spec
+
+    Gem.pre_uninstall_hooks.each do |hook|
+      hook.call self
+    end
+
+    remove spec, specs
+    specs.each do |s| remove_executables s end
+
+    Gem.post_uninstall_hooks.each do |hook|
+      hook.call self
+    end
+
+    @spec = nil
   end
 
   ##

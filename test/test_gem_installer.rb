@@ -515,6 +515,7 @@ load 'my_exec'
     spec = quick_gem 'a' do |s| s.platform = Gem::Platform.new 'mswin32' end
     gem = File.join @tempdir, "#{spec.full_name}.gem"
 
+    Dir.mkdir util_inst_bindir
     util_build_gem spec
     FileUtils.mv File.join(@gemhome, 'cache', "#{spec.full_name}.gem"),
                  @tempdir
@@ -525,7 +526,18 @@ load 'my_exec'
   end
 
   def test_install
+    Dir.mkdir util_inst_bindir
     util_setup_gem
+
+    cache_file = File.join @gemhome, 'cache', "#{@spec.full_name}.gem"
+
+    Gem.pre_install do |installer|
+      assert !File.exist?(cache_file), 'cache file should not exist yet'
+    end
+
+    Gem.post_install do |installer|
+      assert File.exist?(cache_file), 'cache file should exist'
+    end
 
     use_ui @ui do
       assert_equal @spec, @installer.install
@@ -548,6 +560,9 @@ load 'my_exec'
 
     assert_equal spec_file, @spec.loaded_from
     assert File.exist?(spec_file)
+
+    assert_same @installer, @pre_install_hook_arg
+    assert_same @installer, @post_install_hook_arg
   end
 
   def test_install_bad_gem
@@ -582,6 +597,29 @@ load 'my_exec'
     end
   end
 
+  def test_install_check_dependencies_install_dir
+    gemhome2 = "#{@gemhome}2"
+    @spec.add_dependency 'b'
+
+    b2 = quick_gem 'b', 2
+
+    FileUtils.mv @gemhome, gemhome2
+    Gem.source_index.gems.delete b2.full_name
+    source_index = Gem::SourceIndex.from_gems_in File.join(gemhome2,
+                                                           'specifications')
+
+    util_setup_gem
+
+    @installer = Gem::Installer.new @gem, :install_dir => gemhome2,
+                                    :source_index => source_index
+
+    use_ui @ui do
+      @installer.install
+    end
+
+    assert File.exist?(File.join(gemhome2, 'gems', @spec.full_name))
+  end
+
   def test_install_force
     use_ui @ui do
       installer = Gem::Installer.new old_ruby_required, :force => true
@@ -593,6 +631,7 @@ load 'my_exec'
   end
 
   def test_install_ignore_dependencies
+    Dir.mkdir util_inst_bindir
     @spec.add_dependency 'b', '> 5'
     util_setup_gem
     @installer.ignore_dependencies = true
@@ -635,6 +674,44 @@ load 'my_exec'
                                  "#{@spec.full_name}.gemspec"))
   end
 
+  unless win_platform? # File.chmod doesn't work
+    def test_install_user_local_fallback
+      Dir.mkdir util_inst_bindir
+      File.chmod 0755, @userhome
+      File.chmod 0000, util_inst_bindir
+      File.chmod 0000, Gem.dir
+      @spec.executables = ["executable"]
+
+      use_ui @ui do
+        util_setup_gem
+        @installer.install
+      end
+
+      assert File.exist?(File.join(Gem.user_dir, 'gems',
+                                   @spec.full_name, 'lib', 'code.rb'))
+      assert File.exist?(File.join(Gem.user_dir, 'bin', 'executable'))
+    ensure
+      File.chmod 0755, Gem.dir
+      File.chmod 0755, util_inst_bindir
+    end
+
+    def test_install_bindir_read_only
+      Dir.mkdir util_inst_bindir
+      File.chmod 0755, @userhome
+      File.chmod 0000, util_inst_bindir
+
+      use_ui @ui do
+        setup
+        util_setup_gem
+        @installer.install
+      end
+
+      assert File.exist?(File.join(Gem.user_dir, 'bin', 'executable'))
+    ensure
+      File.chmod 0755, util_inst_bindir
+    end
+  end
+
   def test_install_with_message
     @spec.post_install_message = 'I am a shiny gem!'
 
@@ -645,22 +722,6 @@ load 'my_exec'
     end
 
     assert_match %r|I am a shiny gem!|, @ui.output
-  end
-
-  def test_install_writable
-    util_setup_gem
-
-    orig_mode = File.stat(Gem.dir).mode
-    File.chmod 0000, Gem.dir
-
-    e = assert_raise Gem::FilePermissionError do
-      @installer.install
-    end
-
-    assert_equal "You don't have write permissions into the #{@gemhome} directory.",
-                 e.message
-  ensure
-    File.chmod orig_mode, Gem.dir
   end
 
   def test_install_wrong_ruby_version
