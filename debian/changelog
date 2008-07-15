@@ -1,8 +1,8 @@
-libgems-ruby (1.2.0-1) hardy; urgency=low
+libgems-ruby (1.2.0-2008071501-0ubuntu1) intrepid; urgency=low
 
   * New Upstream Version
 
- -- Neil Wilson <neil@brightbox.co.uk>  Mon, 14 Jul 2008 17:09:03 +0100
+ -- Neil Wilson <neil@brightbox.co.uk>  Tue, 15 Jul 2008 10:53:48 +0100
 
 libgems-ruby (1.1.1-1) unstable; urgency=low
 
