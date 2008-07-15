@@ -7,6 +7,8 @@
 
 at_exit { $SAFE = 1 }
 
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+
 require 'fileutils'
 require 'test/unit'
 require 'tmpdir'
@@ -23,6 +25,10 @@ module Gem
 
   def self.win_platform=(val)
     @@win_platform = val
+  end
+
+  module DefaultUserInteraction
+    @ui = MockGemUi.new
   end
 end
 
@@ -83,6 +89,27 @@ class RubyGemTestCase < Test::Unit::TestCase
                                               'private_key.pem')
     @public_cert = File.expand_path File.join(File.dirname(__FILE__),
                                               'public_cert.pem')
+
+    Gem.post_install_hooks.clear
+    Gem.post_uninstall_hooks.clear
+    Gem.pre_install_hooks.clear
+    Gem.pre_uninstall_hooks.clear
+
+    Gem.post_install do |installer|
+      @post_install_hook_arg = installer
+    end
+
+    Gem.post_uninstall do |uninstaller|
+      @post_uninstall_hook_arg = uninstaller
+    end
+
+    Gem.pre_install do |installer|
+      @pre_install_hook_arg = installer
+    end
+
+    Gem.pre_uninstall do |uninstaller|
+      @pre_uninstall_hook_arg = uninstaller
+    end
   end
 
   def teardown

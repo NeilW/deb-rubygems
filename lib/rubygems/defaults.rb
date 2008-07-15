@@ -11,17 +11,21 @@ module Gem
     if defined? RUBY_FRAMEWORK_VERSION then
       File.join File.dirname(ConfigMap[:sitedir]), 'Gems',
                 ConfigMap[:ruby_version]
-    elsif defined? RUBY_ENGINE then
-      File.join ConfigMap[:libdir], RUBY_ENGINE, 'gems',
-                ConfigMap[:ruby_version]
     else
-      File.join ConfigMap[:libdir], 'ruby', 'gems', ConfigMap[:ruby_version]
+      File.join(ConfigMap[:libdir], ruby_engine, 'gems',
+                ConfigMap[:ruby_version])
     end
   end
 
-  # Default gem path.
+  # Path for gems in the user's home directory.
+  def self.user_dir
+    File.join(Gem.user_home, '.gem', ruby_engine,
+              ConfigMap[:ruby_version])
+  end
+
+  # Default gem load path.
   def self.default_path
-    default_dir
+    [user_dir, default_dir]
   end
 
   # Deduce Ruby's --program-prefix and --program-suffix from its install name.
@@ -49,5 +53,13 @@ module Gem
     File.join Gem.user_home, '.gem', 'source_cache'
   end
 
+  # A wrapper around RUBY_ENGINE const that may not be defined.
+  def self.ruby_engine
+    if defined? RUBY_ENGINE
+      RUBY_ENGINE
+    else
+      'ruby'
+    end
+  end
 end
 

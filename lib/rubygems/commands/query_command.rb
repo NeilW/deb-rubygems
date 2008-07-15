@@ -59,7 +59,7 @@ class Gem::Commands::QueryCommand < Gem::Command
       if name.source.empty? then
         alert_error "You must specify a gem name"
         exit_code |= 4
-      elsif installed? name.source, options[:version] then
+      elsif installed? name, options[:version] then
         say "true"
       else
         say "false"
@@ -70,9 +70,11 @@ class Gem::Commands::QueryCommand < Gem::Command
     end
 
     if local? then
-      say
-      say "*** LOCAL GEMS ***"
-      say
+      if ui.outs.tty? then
+        say
+        say "*** LOCAL GEMS ***"
+        say
+      end
 
       specs = Gem.source_index.search name
 
@@ -84,9 +86,11 @@ class Gem::Commands::QueryCommand < Gem::Command
     end
 
     if remote? then
-      say
-      say "*** REMOTE GEMS ***"
-      say
+      if ui.outs.tty? then
+        say
+        say "*** REMOTE GEMS ***"
+        say
+      end
 
       all = options[:all]
 
