@@ -1,0 +1,17 @@
+Notes for rubygems{1.8|1.9} in Debian
+=====================================
+
+Since some patches are applied to fit Debian FHS, Debian's RubyGems behaves
+a bit differently than the original.
+
+* Directory where gems are to be installed
+
+/var/lib/gems is default in Debian instead of /usr/lib/gems. You can
+override it by defining GEM_HOME environment variable. 
+
+* Executables provided by gems
+
+Executables of the gems will be put at /var/lib/gems/{1.8|1.9.0}/bin,
+and symlinked into /usr/local/bin using the alternatives system
+
+ -- Neil Wilson <neil@brightbox.co.uk>  Wed, 16 Jul 2008

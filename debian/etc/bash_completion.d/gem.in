@@ -1,9 +1,9 @@
 # Michael Schuerig, michael@schuerig.de, 2007-02-24
-# [2007-12-21] Updated by Victor Serbin (chepel@hotmail.com) for gem1.8 v1.0
+# [2007-12-21] Updated by Victor Serbin (chepel@hotmail.com) for gem@@VERSION@@ v1.0
 # Free for all uses.
 
-have gem1.8 &&
-_gem18()
+have gem@@VERSION@@ &&
+_gem@@DOTLESS_VERSION@@()
 {
     local cur prev completions
 
@@ -294,4 +294,4 @@ _gem18()
     return 0
 }
 
-[ -n "${have:-}" ] && complete -F _gem18 $filenames gem1.8
+[ -n "${have:-}" ] && complete -F _gem@@DOTLESS_VERSION@@ $filenames gem@@VERSION@@

@@ -1,122 +1,74 @@
 #!/usr/bin/make -f
-# -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-#
-# This file was originally written by Joey Hess and Craig Small.
-# As a special exception, when this file is copied by dh-make into a
-# dh-make output file, you may use that output file without restriction.
-# This special exception was added by Craig Small in version 0.37 of dh-make.
-#
-# Modified to make a template file for a multi-binary package with separated
-# build-arch and build-indep targets  by Bill Allombert 2001
 
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/rules/simple-patchsys.mk
 
-# This has to be exported to make some magic below work.
-export DH_OPTIONS
+DEB_INSTALL_CHANGELOGS_ALL = ChangeLog debian/README.Debian
 
-RAKE = /usr/bin/rake
 RUBY18 = /usr/bin/ruby1.8
+RUBY19 = /usr/bin/ruby1.9
+RDOC = /usr/bin/rdoc1.8
 RUBY18LIBDIR = $(shell $(RUBY18) -rrbconfig -e "puts Config::CONFIG['rubylibdir']")
+RUBY19LIBDIR = $(shell $(RUBY19) -rrbconfig -e "puts Config::CONFIG['rubylibdir']")
 
-config: config-stamp
-config-stamp:
-	dh_testdir
+DEB_INSTALL_DOCS_rubygems-doc += html
 
-	mkdir -p debian/tmp/var/lib/gems/1.8
-	touch config-stamp
+DEB_INSTALL_DIRS_rubygems1.8 += usr/bin/ usr/lib/ruby/1.8/  var/lib/gems/1.8/
+DEB_INSTALL_DIRS_rubygems1.9 += usr/bin/ usr/lib/ruby/1.9.0 var/lib/gems/1.9.0/
 
-build: build-stamp
-build-stamp: patch config
-	dh_testdir
+DEB_INSTALL_MANPAGES_rubygems1.8 += debian/gem1.8.1
+DEB_INSTALL_MANPAGES_rubygems1.9 += debian/gem1.9.1
 
-	touch build-stamp
- 
-clean:: clean1 unpatch
-clean1:
-	dh_testdir
-	dh_testroot
-	rm -f build-stamp config-stamp
-
-	# Add here commands to clean up after the build process.
-	dh_clean
+clean::
 	rm -rf html
+	rm -f debian/gem1.*
+	rm -f debian/etc/bash_completion.d/gem1.*
 
-	#rm -f pkgs/sources/sources-*.gem
+build/rubygems1.8::
+	$(RUBY18) setup.rb --no-rdoc --no-ri --prefix=$(CURDIR)/debian/$(cdbs_curpkg)
 
-install:
-	$(RUBY18) setup.rb --no-rdoc --no-ri --prefix=debian/tmp
-	mkdir -p debian/tmp$(RUBY18LIBDIR)
-	find lib -name "*.rb" | xargs rdoc --fmt html --title RubyGems \
+build/rubygems1.9::
+	$(RUBY19) setup.rb --no-rdoc --no-ri --prefix=$(CURDIR)/debian/$(cdbs_curpkg)
+
+build/rubygems-doc::
+	find lib -name "*.rb" | xargs $(RDOC) --fmt html --title RubyGems \
 	  --line-numbers --inline-source --main README -o html README TODO
-	mv debian/tmp/lib/* debian/tmp$(RUBY18LIBDIR)/
-	mv debian/tmp/bin debian/tmp/usr/
-	rm -f debian/tmp/usr/bin/update_rubygems*
-	
-	cp -r debian/etc debian/tmp/
-	
-	dh_testdir
-	dh_testroot
-	# dh_clean -k
-	dh_installdirs
-	
-	# DEBUG tree debian/tmp
-	dh_install --list-missing --sourcedir=debian/tmp
-	rm -rf debian/libgems-ruby1.8/usr/bin
-	#cp -ar docs debian/libgems-ruby1.8/usr/share/doc/libgems-ruby1.8/
-	#cp -ar test debian/libgems-ruby1.8/usr/share/doc/libgems-ruby1.8/
 
-# Build architecture-independent files here.
-binary-indep: build install
-	dh_testdir -i
-	dh_testroot -i
-	dh_installchangelogs ChangeLog
-	dh_installdocs -i
-	dh_installexamples -i
-#	dh_installmenu
-#	dh_installdebconf	
-#	dh_installlogrotate	
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_installinit
-#	dh_installcron
-#	dh_installinfo
-	dh_installman
-	dh_link -i
-	dh_strip -i
-	dh_compress -i 
-	dh_fixperms -i
-#	dh_perl
-#	dh_python
-#	dh_makeshlibs
-	dh_installdeb -i
-#	dh_shlibdeps
-	dh_gencontrol -i
-	dh_md5sums -i
-	dh_builddeb -i
+install/rubygems1.8::
+	find $(CURDIR)/debian/ -type f -name "*.in" | \
+	  while read fname; \
+	  do \
+	    sed -e 's/@@VERSION@@/1\.8/g' -e 's/@@DOTLESS_VERSION@@/18/g' \
+		< $$fname > `expr $$fname : '\(.*\)\.in$$'`1.8; \
+	  done; \
+	  : \
+	done
+	mv $(CURDIR)/debian/gem1.8 $(CURDIR)/debian/gem1.8.1
+	mkdir -p $(CURDIR)/debian/$(cdbs_curpkg)/$(RUBY18LIBDIR)/
+	mkdir -p $(CURDIR)/debian/$(cdbs_curpkg)/usr/bin/
+	mv $(CURDIR)/debian/$(cdbs_curpkg)/lib/* $(CURDIR)/debian/$(cdbs_curpkg)/$(RUBY18LIBDIR)/
+	rm -rf $(CURDIR)/debian/$(cdbs_curpkg)/lib
+	mv $(CURDIR)/debian/$(cdbs_curpkg)/bin/gem1.8 $(CURDIR)/debian/$(cdbs_curpkg)/usr/bin/
+	rm -rf $(CURDIR)/debian/$(cdbs_curpkg)/bin/
+	dh_install -p$(cdbs_curpkg)\
+	  debian/etc/bash_completion.d/gem1.8 etc/bash_completion.d/
 
-# Build architecture-dependent files here.
-binary-arch: build install 
-# We have nothing to do by default.
-
-# Build architecture independant packages using the common target.
-binary: binary-indep binary-arch
-	
-#binary: build install
-#	$(MAKE) -f debian/rules DH_OPTIONS=-s binary-indep
-
-patch: patch-stamp
-patch-stamp:
-	dpatch apply-all
-	dpatch cat-all >patch-stamp
-	touch patch-stamp
-
-unpatch:
-	dpatch deapply-all
-	rm -rf patch-stamp debian/patched
-
-
-.PHONY: build config patch unpatch clean clean1 binary-indep binary-arch binary install
+install/rubygems1.9::
+	find $(CURDIR)/debian/ -type f -name "*.in" | \
+	  while read fname; \
+	  do \
+	    sed -e 's/@@VERSION@@/1\.9/g' -e 's/@@DOTLESS_VERSION@@/19/g' \
+		< $$fname > `expr $$fname : '\(.*\)\.in$$'`1.9; \
+	  done; \
+	  : \
+	done
+	mv $(CURDIR)/debian/gem1.9 $(CURDIR)/debian/gem1.9.1
+	mkdir -p $(CURDIR)/debian/$(cdbs_curpkg)/$(RUBY19LIBDIR)/
+	mkdir -p $(CURDIR)/debian/$(cdbs_curpkg)/usr/bin/
+	mv $(CURDIR)/debian/$(cdbs_curpkg)/lib/* $(CURDIR)/debian/$(cdbs_curpkg)/$(RUBY19LIBDIR)/
+	rm -rf $(CURDIR)/debian/$(cdbs_curpkg)/lib
+	mv $(CURDIR)/debian/$(cdbs_curpkg)/bin/gem1.9 $(CURDIR)/debian/$(cdbs_curpkg)/usr/bin/
+	rm -rf $(CURDIR)/debian/$(cdbs_curpkg)/bin/
+	dh_install -p$(cdbs_curpkg) \
+	  debian/etc/bash_completion.d/gem1.9 etc/bash_completion.d/
 

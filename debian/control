@@ -1,32 +1,19 @@
 Source: libgems-ruby
 Section: interpreters
 Priority: optional
-Maintainer: Daigo Moriwaki <daigo@debian.org>
-Uploaders: Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>
-Build-Depends-Indep: dpatch (>= 2.0.10), debhelper (>= 4.0.0), ruby1.8, rdoc1.8, ruby-pkg-tools
-Standards-Version: 3.7.3
+Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
+XSBC-Original-Maintainer: Daigo Moriwaki <daigo@debian.org>
+Build-Depends: cdbs, debhelper (>= 4.0.0), ruby1.8, rdoc, ruby1.9, ruby-pkg-tools
+Standards-Version: 3.8.0
 Homepage: http://rubygems.org/
+XS-Vcs-svn: http://rubygems.rubyforge.org/svn/
 
-Package: libgems-ruby1.8
+Package: rubygems1.8
 Architecture: all
-Depends: libruby1.8, rdoc1.8, libopenssl-ruby1.8
-Recommends: rubygems
-Description: libraries to use RubyGems, a package management framework
- This is a way to package Ruby libraries/applications for distribution.
- RubyGems provides the ability to manage concurrent versions of libraries and
- dependencies between those libraries. Using RubyGems, you can:
-   * download and install Ruby libraries easily
-   * not worry about libraries A and B depending on different versions of
-     library C
-   * easily remove libraries you no longer use
- .
- This package contains RubyGems' libraries. The commands are included in
- `rubygems' package.
-
-Package: rubygems
-Architecture: all
-Depends: ruby1.8, libgems-ruby1.8 (= ${source:Version}) 
-Suggests: ruby1.8-dev, build-essential
+Depends: ruby1.8, rdoc1.8
+Suggests: ruby1.8-dev, build-essential, rubygems-doc
+Conflicts: libgems-ruby1.8, rubygems
+Replaces: libgems-ruby1.8, rubygems
 Description: package management framework for Ruby libraries/applications
  This is a way to package Ruby libraries/applications for distribution.
  RubyGems provides the ability to manage concurrent versions of libraries and
@@ -36,4 +23,37 @@ Description: package management framework for Ruby libraries/applications
      library C
    * easily remove libraries you no longer use
  .
- This package contains RubyGems' commands like /usr/bin/gem.
+ This package provides RubyGems with Ruby 1.8.
+
+Package: rubygems1.9
+Architecture: all
+Depends: ruby1.9 (>= 1.9.0.1-5), rdoc1.9
+Suggests: ruby1.9-dev (>= 1.9.0.1-5), build-essential, rubygems-doc
+Conflicts: gem1.9
+Replaces: gem1.9
+Description: package management framework for Ruby libraries/applications
+ This is a way to package Ruby libraries/applications for distribution.
+ RubyGems provides the ability to manage concurrent versions of libraries and
+ dependencies between those libraries. Using RubyGems, you can:
+   * download and install Ruby libraries easily
+   * not worry about libraries A and B depending on different versions of
+     library C
+   * easily remove libraries you no longer use
+ .
+ This package provides RubyGems with Ruby 1.9.
+
+Package: rubygems-doc
+Section: doc
+Architecture: all
+Suggests: www-browse, ruby1.8 | ruby1.9
+Description: package management framework for Ruby libraries/applications
+ This is a way to package Ruby libraries/applications for distribution.
+ RubyGems provides the ability to manage concurrent versions of libraries and
+ dependencies between those libraries. Using RubyGems, you can:
+   * download and install Ruby libraries easily
+   * not worry about libraries A and B depending on different versions of
+     library C
+   * easily remove libraries you no longer use
+ .
+ This package provides documents of RubyGems, which is available for both 
+ Ruby 1.8 and 1.9.

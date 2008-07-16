@@ -1,0 +1,12 @@
+diff -Nur -x '*.orig' -x '*~' libgems-ruby/test/test_gem_uninstaller.rb libgems-ruby.new/test/test_gem_uninstaller.rb
+--- libgems-ruby/test/test_gem_uninstaller.rb	2008-07-16 08:44:59.000000000 +0100
++++ libgems-ruby.new/test/test_gem_uninstaller.rb	2008-07-16 08:45:40.000000000 +0100
+@@ -61,7 +61,7 @@
+   end
+ 
+   def test_uninstall
+-    uninstaller = Gem::Uninstaller.new @spec.name
++    uninstaller = Gem::Uninstaller.new @spec.name, :executables => true
+ 
+     gem_dir = File.join @gemhome, 'gems', @spec.full_name
+ 
