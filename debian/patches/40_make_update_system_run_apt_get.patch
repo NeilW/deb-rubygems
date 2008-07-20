@@ -1,0 +1,30 @@
+diff -Nur -x '*.orig' -x '*~' libgems-ruby/lib/rubygems/commands/update_command.rb libgems-ruby.new/lib/rubygems/commands/update_command.rb
+--- libgems-ruby/lib/rubygems/commands/update_command.rb	2008-06-10 00:01:25.000000000 +0100
++++ libgems-ruby.new/lib/rubygems/commands/update_command.rb	2008-07-20 20:53:21.000000000 +0100
+@@ -44,6 +44,16 @@
+     "#{program_name} GEMNAME [GEMNAME ...]"
+   end
+ 
++  def update_rubygems_command
++    "apt-get install rubygems" <<
++    case RUBY_VERSION
++    when /1\.9/
++      "1.9"
++    when /1\.8/
++      "1.8"
++    end
++  end
++
+   def execute
+     if options[:system] then
+       say "Updating RubyGems"
+@@ -51,8 +61,7 @@
+       unless options[:args].empty? then
+         fail "No gem names are allowed with the --system option"
+       end
+-
+-      options[:args] = ["rubygems-update"]
++      exec update_rubygems_command
+     else
+       say "Updating installed gems"
+     end
