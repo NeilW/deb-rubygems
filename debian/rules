@@ -53,7 +53,7 @@ install/rubygems1.8::
 	dh_install -p$(cdbs_curpkg)\
 	  debian/etc/bash_completion.d/gem1.8 etc/bash_completion.d/
 	dh_install -p$(cdbs_curpkg)\
-	  debian/operating_system.rb $(RUBY18LIBDIR)/rubygems/defaults/operating_system.rb
+	  debian/operating_system.rb $(RUBY18LIBDIR)/rubygems/defaults/
 
 install/rubygems1.9::
 	find $(CURDIR)/debian/ -type f -name "*.in" | \
@@ -74,5 +74,5 @@ install/rubygems1.9::
 	dh_install -p$(cdbs_curpkg) \
 	  debian/etc/bash_completion.d/gem1.9 etc/bash_completion.d/
 	dh_install -p$(cdbs_curpkg) \
-	  debian/operating_system.rb $(RUBY19LIBDIR)/rubygems/defaults/operating_system.rb
+	  debian/operating_system.rb $(RUBY19LIBDIR)/rubygems/defaults/
 
