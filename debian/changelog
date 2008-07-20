@@ -1,4 +1,4 @@
-libgems-ruby (1.2.0+2008071601-0ubuntu1~bbox1) intrepid; urgency=low
+libgems-ruby (1.2.0+2008072001-0ubuntu1~bbox1) intrepid; urgency=low
 
   * Import from SVN to obtain hooks.
   * Add in defaults/operating_system.rb to enforce Debian standards.
