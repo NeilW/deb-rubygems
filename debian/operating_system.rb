@@ -23,17 +23,35 @@ module Gem
   ConfigFile::OPERATING_SYSTEM_DEFAULTS["install"] = "--no-ri --no-rdoc"
   ConfigFile::OPERATING_SYSTEM_DEFAULTS["update"] = "--no-ri --no-rdoc"
 
+  # Alternatives directories
+  def self.altdir
+    File.join('','usr','local','etc','gems','alternatives')
+  end
+
+  def self.admindir
+    File.join(Gem.dir,'..','alternatives')
+  end
+
+  def self.localbindir
+    File.join('','usr','local','bin')
+  end
+
+  # Alternatives command
+  def self.update_alts
+    "update-alternatives --altdir #{Gem.altdir} --admindir #{Gem.admindir} --verbose"
+  end
+
   post_install do |installer|
     executable_list = installer.spec.executables
     bindir = installer.bin_dir || Gem.bindir(installer.gem_home)
     if bindir == Gem.bindir && !executable_list.empty?
-      localdir = File.join('','usr','local','bin')
+      set_args = "#{executable_list.first} #{File.join(bindir, executable_list.first)}"
       execs = executable_list.collect do |filename|
-        "#{File.join(localdir,filename)} #{filename} #{File.join(bindir, filename)} " 
+        "#{File.join(Gem.localbindir,filename)} #{filename} #{File.join(bindir, filename)} " 
       end
       system %Q{
-          update-alternatives --verbose --install #{execs.shift} 100 #{"--slave" unless execs.empty?} #{execs.join(" --slave ")}
-          }
+        #{Gem.update_alts} --install #{execs.shift} 100 #{"--slave" unless execs.empty?} #{execs.join(" --slave ")} && #{update_alts} --set #{set_args}
+      }
     end
   end
 
@@ -41,16 +59,30 @@ module Gem
     executable_list = uninstaller.spec.executables
     bindir = uninstaller.bin_dir || Gem.bindir(uninstaller.gem_home)
     if bindir == Gem.bindir && !executable_list.empty?
-      filename = executable_list.first
-      localdir = File.join('','usr','local','bin')
-      target = File.join(bindir, filename)
+      alt_group_name = executable_list.first
+      target = File.join(bindir,alt_group_name)
       unless File.exists?(target)
-        # 'target' has to be there or alternatives gets upset.
-        # Can't move this to pre_uninstall because we don't know
-        # if the executable needs removing there.
+        remove_args = "#{alt_group_name} #{target}"
+        # system pipe explanation
+        # - Check there is something that needs changing
+        # - 'target' has to be there or alternatives gets upset.
+        #   (Can't move this to pre_uninstall because we don't know
+        #   if the executable needs removing there.)
+        # - if there is only 1 alternative switch to auto mode to work
+        #   around a bug in the alternatives system remove command.
+        #   (LP: 254382)
+        # - Remove the alternative
+        # - Remove the temporary target
         system %Q{
-          touch #{target} && update-alternatives --verbose --remove #{filename} #{target} && rm -f #{target}
-          }
+          #{Gem.update_alts} --list #{alt_group_name} >/dev/null &&
+          touch #{target} &&
+          if [ $(#{Gem.update_alts} --list #{alt_group_name}|wc -l) -eq 1 ]
+          then
+            #{Gem.update_alts} --auto #{alt_group_name}
+          fi &&
+          #{Gem.update_alts} --remove #{remove_args} &&
+          rm -f #{target}
+        }
       end
     end
   end
