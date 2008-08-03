@@ -49,6 +49,7 @@ module Gem
       execs = executable_list.collect do |filename|
         "#{File.join(Gem.localbindir,filename)} #{filename} #{File.join(bindir, filename)} " 
       end
+      FileUtils.mkdir_p Gem.altdir unless File.directory?(Gem.altdir)
       system %Q{
         #{Gem.update_alts} --install #{execs.shift} 100 #{"--slave" unless execs.empty?} #{execs.join(" --slave ")} && #{update_alts} --set #{set_args}
       }

@@ -13,8 +13,8 @@ RUBY19LIBDIR = $(shell $(RUBY19) -rrbconfig -e "puts Config::CONFIG['rubylibdir'
 
 DEB_INSTALL_DOCS_rubygems-doc += html
 
-DEB_INSTALL_DIRS_rubygems1.8 += usr/bin/ usr/lib/ruby/1.8/  var/lib/gems/1.8/
-DEB_INSTALL_DIRS_rubygems1.9 += usr/bin/ usr/lib/ruby/1.9.0 var/lib/gems/1.9.0/
+DEB_INSTALL_DIRS_rubygems1.8 += usr/bin/ usr/lib/ruby/1.8/  var/lib/gems/1.8/ /var/lib/gems/alternatives
+DEB_INSTALL_DIRS_rubygems1.9 += usr/bin/ usr/lib/ruby/1.9.0 var/lib/gems/1.9.0/ /var/lib/gems/alternatives
 
 DEB_INSTALL_MANPAGES_rubygems1.8 += debian/gem1.8.1
 DEB_INSTALL_MANPAGES_rubygems1.9 += debian/gem1.9.1
