@@ -38,7 +38,7 @@ module Gem
 
   # Alternatives command
   def self.update_alts
-    "update-alternatives --altdir #{Gem.altdir} --admindir #{Gem.admindir} --verbose"
+    "update-alternatives --altdir #{Gem.altdir} --admindir #{Gem.admindir} #{if Gem.configuration.really_verbose then '--verbose' else '--quiet' end}"
   end
 
   post_install do |installer|
