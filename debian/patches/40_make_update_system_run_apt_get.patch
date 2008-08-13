@@ -1,6 +1,6 @@
 diff -Nur -x '*.orig' -x '*~' libgems-ruby/lib/rubygems/commands/update_command.rb libgems-ruby.new/lib/rubygems/commands/update_command.rb
---- libgems-ruby/lib/rubygems/commands/update_command.rb	2008-06-10 00:01:25.000000000 +0100
-+++ libgems-ruby.new/lib/rubygems/commands/update_command.rb	2008-07-20 20:53:21.000000000 +0100
+--- libgems-ruby/lib/rubygems/commands/update_command.rb	2008-08-13 18:49:11.000000000 +0100
++++ libgems-ruby.new/lib/rubygems/commands/update_command.rb	2008-08-13 18:58:03.000000000 +0100
 @@ -44,6 +44,16 @@
      "#{program_name} GEMNAME [GEMNAME ...]"
    end
@@ -16,15 +16,14 @@ diff -Nur -x '*.orig' -x '*~' libgems-ruby/lib/rubygems/commands/update_command.
 +  end
 +
    def execute
-     if options[:system] then
-       say "Updating RubyGems"
-@@ -51,8 +61,7 @@
-       unless options[:args].empty? then
+     hig = {}
+ 
+@@ -54,6 +64,8 @@
          fail "No gem names are allowed with the --system option"
        end
--
--      options[:args] = ["rubygems-update"]
+ 
 +      exec update_rubygems_command
-     else
-       say "Updating installed gems"
-     end
++
+       spec = Gem::Specification.new
+       spec.name = 'rubygems-update'
+       spec.version = Gem::Version.new Gem::RubyGemsVersion
