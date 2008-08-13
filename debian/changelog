@@ -1,4 +1,4 @@
-libgems-ruby (1.2.0+20080812-0ubuntu1~bbox1) intrepid; urgency=low
+libgems-ruby (1.2.0+2008081301-0ubuntu1~bbox1) intrepid; urgency=low
 
   * Make alternatives respond to verbose option.
   * Use a gem specific alternatives database.
@@ -10,13 +10,11 @@ libgems-ruby (1.2.0+20080812-0ubuntu1~bbox1) intrepid; urgency=low
   * Use alternatives system to make gems available on PATH. Closes LP: 145267
   * Move to CDBS simple patch system from dpatch.
   * Remove tight ruby1.9 build dependency to allow backports.
-  * debian/patches: 10_fix_uninstall_executables added.
-  * debian/patches: 20_fix_gem_uninstaller_test added.
   * debian/patches: remove 21_avoid_ioseek - incorporated upstream.
   * debian/patches: remove 01_default_gem_path - replaced by
     debian/operating_system.rb.
 
- -- Neil Wilson <neil@brightbox.co.uk>  Tue, 12 Aug 2008 15:19:19 +0100
+ -- Neil Wilson <neil@brightbox.co.uk>  Wed, 13 Aug 2008 18:47:39 +0100
 
 libgems-ruby (1.2.0-2) unstable; urgency=low
  
