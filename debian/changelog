@@ -3,7 +3,8 @@ libgems-ruby (1.2.0+20080812-0ubuntu1~bbox1) intrepid; urgency=low
   * Make alternatives respond to verbose option.
   * Use a gem specific alternatives database.
   * Add rubygems default package that points at rubygems1.8
-  * Make 'update --system' call apt-get
+  * debian/patches: 40_make_update_system_run_apt_get - make
+    'update --system' call apt-get. Replaces 03_disable_update_system.
   * Import from SVN to obtain hooks.
   * Use defaults/operating_system.rb to enforce Debian standards.
   * Use alternatives system to make gems available on PATH. Closes LP: 145267
@@ -11,9 +12,18 @@ libgems-ruby (1.2.0+20080812-0ubuntu1~bbox1) intrepid; urgency=low
   * Remove tight ruby1.9 build dependency to allow backports.
   * debian/patches: 10_fix_uninstall_executables added.
   * debian/patches: 20_fix_gem_uninstaller_test added.
+  * debian/patches: remove 21_avoid_ioseek - incorporated upstream.
+  * debian/patches: remove 01_default_gem_path - replaced by
+    debian/operating_system.rb.
 
  -- Neil Wilson <neil@brightbox.co.uk>  Tue, 12 Aug 2008 15:19:19 +0100
 
+libgems-ruby (1.2.0-2) unstable; urgency=low
+ 
+  * debian/rules: Fixed a file conflict with libruby1.9 (Closes: #493309)
+ 
+ -- Daigo Moriwaki <daigo@debian.org>  Sun, 03 Aug 2008 21:32:36 +0900
+ 
 libgems-ruby (1.2.0-1) unstable; urgency=low
 
   * New upstream release. (Closes: #487820)

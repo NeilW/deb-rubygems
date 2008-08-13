@@ -68,6 +68,7 @@ install/rubygems1.9::
 	mkdir -p $(CURDIR)/debian/$(cdbs_curpkg)/$(RUBY19LIBDIR)/
 	mkdir -p $(CURDIR)/debian/$(cdbs_curpkg)/usr/bin/
 	mv $(CURDIR)/debian/$(cdbs_curpkg)/lib/* $(CURDIR)/debian/$(cdbs_curpkg)/$(RUBY19LIBDIR)/
+	rm $(CURDIR)/debian/$(cdbs_curpkg)/$(RUBY19LIBDIR)/rbconfig/datadir.rb
 	rm -rf $(CURDIR)/debian/$(cdbs_curpkg)/lib
 	mv $(CURDIR)/debian/$(cdbs_curpkg)/bin/gem1.9 $(CURDIR)/debian/$(cdbs_curpkg)/usr/bin/
 	rm -rf $(CURDIR)/debian/$(cdbs_curpkg)/bin/
