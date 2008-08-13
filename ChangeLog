@@ -1,4 +1,20 @@
 # -*- coding: utf-8 -*-
+2008-08-13  Wilson Bilkovich  <wilson@supremetyrant.com>
+
+	* lib/rubygems/uninstaller.rb:	Fix binary script uninstallation.
+		Bug #21234 by Neil Wilson.
+	* test/test_gem_commands_uninstall_command.rb: Added
+
+2008-08-12  Eric Hodel  <drbrain@segment7.net>
+
+	* lib/rubygems/installer.rb:  Try to create directory before diverting
+	to ~/.gems.
+	* lib/rubygems/uninstaller.rb:  Fix uninstallation with -i.  Bug
+	#20812 by John Clayton.  Have #remove_all call #uninstall_gem so hooks
+	get called.  Bug #21242 by Neil Wilson.
+	* lib/rubygems/commands/update_command.rb:  Fix updating RubyGems when
+	no previous rubygems-update is installed.  Bug #20775 by Hemant Kumar.
+
 2008-08-11  Eric Hodel  <drbrain@segment7.net>
 
 	* lib/rubygems/remote_fetcher.rb:  Fix HTTPS support.  Patch #21072 by
