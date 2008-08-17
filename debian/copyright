@@ -67,11 +67,17 @@ You can redistribute it and/or modify it under either the terms of the GPL
      WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
      PURPOSE.
 
--- 
-On Debian GNU/Linux systems, the complete text of the GNU General
-Public License can be found in `/usr/share/common-licenses/GPL'.
+* debian/etc/bash-completion.d
+    Rubygems bash completion
+    Copyright (c) Michael Schuerig, <michael@schuerig.de> 2007-02-24.
+    Free for all uses.
 
+* debian/operating_system.rb
+    RubyGems - Debian packaging alterations
+    Copyright (C) 2008, Neil Wilson, Brightbox Systems <neil@brightbox.co.uk>
+    Licensed under GPL-2 (see /usr/share/common-licenses/GPL-2)
 
-debian/patches/22_add_bash_completion.dpatch
-Rubygems bash completion (c) Michael Schuerig, michael@schuerig.de, 2007-02-24
-Free for all uses.
+Packaging:
+    Copyright (C) 2004-2008, Daigo Moriwaki <daigo@debian.org>.
+    Licensed under GPL-2 (see /usr/share/common-licenses/GPL-2)
+
