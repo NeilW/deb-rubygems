@@ -1,4 +1,4 @@
-libgems-ruby (1.2.0+2008081301-0ubuntu1~bbox1) intrepid; urgency=low
+libgems-ruby (1.2.0+2008081701-0ubuntu1~bbox1) intrepid; urgency=low
 
   * Make alternatives respond to verbose option.
   * Use a gem specific alternatives database.
@@ -13,8 +13,10 @@ libgems-ruby (1.2.0+2008081301-0ubuntu1~bbox1) intrepid; urgency=low
   * debian/patches: remove 21_avoid_ioseek - incorporated upstream.
   * debian/patches: remove 01_default_gem_path - replaced by
     debian/operating_system.rb.
+  * debian/patches: remove 08_tighter_regex_search - upstream now uses
+    a different search system that does not have the substring problem.
 
- -- Neil Wilson <neil@brightbox.co.uk>  Wed, 13 Aug 2008 18:47:39 +0100
+ -- Neil Wilson <neil@brightbox.co.uk>  Sun, 17 Aug 2008 17:27:45 +0100
 
 libgems-ruby (1.2.0-2) unstable; urgency=low
  
