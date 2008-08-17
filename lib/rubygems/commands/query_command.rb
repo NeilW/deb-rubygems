@@ -69,14 +69,16 @@ class Gem::Commands::QueryCommand < Gem::Command
       raise Gem::SystemExitException, exit_code
     end
 
+    dep = Gem::Dependency.new name, Gem::Requirement.default
+
     if local? then
-      if ui.outs.tty? then
+      if ui.outs.tty? or both? then
         say
         say "*** LOCAL GEMS ***"
         say
       end
 
-      specs = Gem.source_index.search name
+      specs = Gem.source_index.search dep
 
       spec_tuples = specs.map do |spec|
         [[spec.name, spec.version, spec.original_platform, spec], :local]
@@ -86,7 +88,7 @@ class Gem::Commands::QueryCommand < Gem::Command
     end
 
     if remote? then
-      if ui.outs.tty? then
+      if ui.outs.tty? or both? then
         say
         say "*** REMOTE GEMS ***"
         say
@@ -94,7 +96,6 @@ class Gem::Commands::QueryCommand < Gem::Command
 
       all = options[:all]
 
-      dep = Gem::Dependency.new name, Gem::Requirement.default
       begin
         fetcher = Gem::SpecFetcher.fetcher
         spec_tuples = fetcher.find_matching dep, all, false
